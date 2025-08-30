@@ -1,35 +1,272 @@
-<!DOCTYPE html>
-<html lang="zh">
+<!doctype html>
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <title>DeepGrow</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GrowPilot · 携行智导</title>
+  <meta name="color-scheme" content="light dark" />
   <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      padding: 80px 20px;
-      background: #f5f5f5;
+    :root{
+      --bg: #ffffff;
+      --text: #0f172a;          /* slate-900 */
+      --muted:#64748b;          /* slate-500 */
+      --border:#e2e8f0;         /* slate-200 */
+      --brand:#1f6feb;          /* brand primary */
+      --brand-2:#0ea5e9;        /* accent */
+      --card:#f8fafc;           /* slate-50 */
+      --shadow: 0 10px 30px rgba(2, 6, 23, .06);
+      --radius: 16px;
     }
-    h1 {
-      font-size: 2em;
-      color: #222;
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#0b1220;
+        --text:#e5e7eb;
+        --muted:#a1a1aa;
+        --border:#1f2937;
+        --card:#0f172a;
+        --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+      }
     }
-    a {
-      font-size: 18px;
-      color: #fff;
-      background: #3c8dbc;
-      padding: 12px 24px;
-      text-decoration: none;
-      border-radius: 8px;
-      display: inline-block;
-      margin-top: 20px;
+    html,body{height:100%;}
+    body{
+      margin:0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", "Noto Sans CJK SC","Microsoft YaHei", Arial, "Apple Color Emoji","Segoe UI Emoji";
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
+
+    /* ===== Layout ===== */
+    .app{
+      display:grid;
+      grid-template-columns: 280px 1fr;
+      min-height:100dvh;
+    }
+    .sidebar{
+      border-right:1px solid var(--border);
+      padding:18px 14px;
+      position:sticky;
+      top:0;
+      height:100dvh;
+      overflow:auto;
+    }
+    .logoRow{
+      display:flex; align-items:center; gap:10px;
+      padding:6px 10px; border-radius:12px;
+    }
+    .logoRow img{
+      width:28px; height:28px; border-radius:8px;
+      box-shadow: var(--shadow);
+    }
+    .logoText{
+      font-weight:700; letter-spacing:.2px;
+    }
+    .nav{
+      margin-top:14px;
+      display:grid; gap:6px;
+    }
+    .nav a{
+      text-decoration:none; color:var(--text);
+      padding:10px 12px; border-radius:12px;
+      display:flex; align-items:center; gap:10px;
+    }
+    .nav a:hover{ background: var(--card); }
+    .nav .label{ flex:1; font-size:14px; }
+
+    .main{
+      display:flex; flex-direction:column; min-height:100dvh;
+    }
+    .topbar{
+      height:56px; display:flex; align-items:center; justify-content:center;
+      border-bottom:1px solid var(--border);
+    }
+    .title{
+      font-size:22px; font-weight:600;
+      letter-spacing:.2px;
+    }
+    .stage{
+      flex:1; display:flex; align-items:center; justify-content:center;
+      padding:40px 16px;
+    }
+    .center{
+      width:min(900px, 92vw);
+      display:flex; flex-direction:column; align-items:center; gap:24px;
+    }
+    .hero{
+      font-size:38px; font-weight:700; text-align:center; line-height:1.2;
+    }
+
+    /* ===== Search Bar ===== */
+    .ask{
+      width:100%;
+      display:flex; align-items:center; gap:10px;
+      background:var(--bg);
+      border:1px solid var(--border);
+      border-radius:40px;
+      box-shadow: var(--shadow);
+      padding:8px;
+    }
+    .plus{
+      width:40px; height:40px; border-radius:50%;
+      display:grid; place-items:center; border:1px solid var(--border);
+      background:var(--card);
+      cursor:pointer;
+    }
+    .inputWrap{
+      flex:1; display:flex; align-items:center; gap:10px;
+      border-radius:28px; padding:0 6px 0 2px;
+    }
+    input[type="text"]{
+      flex:1; height:48px; border:none; outline:none;
+      background:transparent; color:var(--text);
+      font-size:16px;
+    }
+    .actions{
+      display:flex; align-items:center; gap:6px;
+    }
+    .chip{
+      width:40px; height:40px; border-radius:50%;
+      display:grid; place-items:center; border:1px solid var(--border);
+      background:var(--card); cursor:pointer;
+    }
+    .go{
+      height:40px; padding:0 14px; border-radius:20px; border:none;
+      background:linear-gradient(135deg, var(--brand), var(--brand-2));
+      color:white; font-weight:600; cursor:pointer;
+    }
+
+    /* ===== Example grid ===== */
+    .examples{
+      width:100%; display:grid; gap:12px;
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .ex{
+      border:1px solid var(--border);
+      background:var(--card);
+      padding:14px 16px; border-radius:16px;
+      font-size:14px;
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 1024px){
+      .app{ grid-template-columns: 0 1fr; }
+      .sidebar{ display:none; }
+      .hero{ font-size:32px; }
+    }
+    @media (max-width: 640px){
+      .hero{ font-size:26px; }
+      .examples{ grid-template-columns: 1fr; }
+    }
+
+    /* subtle icon styles */
+    svg{ width:18px; height:18px; color:var(--muted); }
   </style>
 </head>
 <body>
-  <h1>欢迎来到 DeepGrow 👋</h1>
-  <p>点击下方按钮访问我们的主页</p>
-  <a href="https://debonair-calliandra-265.notion.site/DeepGrow-2167636ff07a80db88b0f149aa59dcf5" target="_blank">立即前往 Notion 官网</a>
+<div class="app">
+  <!-- ===== Sidebar ===== -->
+  <aside class="sidebar">
+    <div class="logoRow">
+      <img src="logo.png" alt="GrowPilot logo" />
+      <div class="logoText">GrowPilot</div>
+    </div>
+
+    <nav class="nav" aria-label="primary">
+      <a href="#">
+        <span class="label">新聊天</span>
+      </a>
+      <a href="#"><span class="label">搜索聊天</span></a>
+      <a href="#"><span class="label">库</span></a>
+
+      <div style="height:8px"></div>
+      <a href="#"><span class="label">Codex</span></a>
+      <a href="#"><span class="label">Sora</span></a>
+      <a href="#"><span class="label">GPT</span></a>
+
+      <div style="height:8px"></div>
+      <a href="#"><span class="label">【产研层面】</span></a>
+      <a href="#"><span class="label">思维&决策系统</span></a>
+      <a href="#"><span class="label">身心健康系统</span></a>
+      <a href="#"><span class="label">情绪韧性线</span></a>
+      <a href="#"><span class="label">职业成长系统</span></a>
+    </nav>
+  </aside>
+
+  <!-- ===== Main ===== -->
+  <main class="main">
+    <div class="topbar">
+      <div class="title">GrowPilot 5 ▾</div>
+    </div>
+
+    <section class="stage">
+      <div class="center">
+        <div class="hero">您今天在想什么？</div>
+
+        <!-- Ask bar -->
+        <form class="ask" id="askForm" autocomplete="off">
+          <div class="plus" title="新建">
+            <!-- plus icon -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M12 5v14M5 12h14" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+
+          <div class="inputWrap">
+            <input id="q" type="text" placeholder="询问任何问题" aria-label="输入你的问题" />
+          </div>
+
+          <div class="actions">
+            <!-- mic -->
+            <div class="chip" title="语音">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 1 1-6 0V6a3 3 0 0 1 3-3z" stroke-width="2"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke-width="2" stroke-linecap="round"/>
+                <path d="M12 19v3" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <!-- equalizer -->
+            <div class="chip" title="调参">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="4" y="4" width="4" height="16" rx="1" stroke-width="2"/>
+                <rect x="10" y="10" width="4" height="10" rx="1" stroke-width="2"/>
+                <rect x="16" y="6" width="4" height="14" rx="1" stroke-width="2"/>
+              </svg>
+            </div>
+            <button class="go" type="submit">开始</button>
+          </div>
+        </form>
+
+        <!-- Example prompts -->
+        <div class="examples" aria-label="examples">
+          <div class="ex">帮我梳理一个【系统成长路径】的阶段划分</div>
+          <div class="ex">生成一张【方法卡】：如何提升团队协作效率</div>
+          <div class="ex">把这段复盘转成【结构卡】并给记忆要点</div>
+          <div class="ex">做个【矛盾体地图】+【系统反馈环】分析</div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  // 简单交互：提交后跳到一个占位地址
+  document.getElementById('askForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const q = (document.getElementById('q').value || '').trim();
+    if(!q){ document.getElementById('q').focus(); return; }
+    // 这里替换为你的对话页面路由或 API
+    alert('你问了：' + q + '\n（在这里对接你的对话后端/新页面）');
+  });
+
+  // 示例卡片点击 -> 填入输入框
+  document.querySelectorAll('.ex').forEach(el=>{
+    el.style.cursor='pointer';
+    el.addEventListener('click', ()=>{
+      document.getElementById('q').value = el.textContent.trim();
+      document.getElementById('q').focus();
+    });
+  });
+</script>
 </body>
 </html>
