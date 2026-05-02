@@ -1,272 +1,167 @@
 <!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GrowPilot · 携行智导</title>
-  <meta name="color-scheme" content="light dark" />
-  <style>
-    :root{
-      --bg: #ffffff;
-      --text: #0f172a;          /* slate-900 */
-      --muted:#64748b;          /* slate-500 */
-      --border:#e2e8f0;         /* slate-200 */
-      --brand:#1f6feb;          /* brand primary */
-      --brand-2:#0ea5e9;        /* accent */
-      --card:#f8fafc;           /* slate-50 */
-      --shadow: 0 10px 30px rgba(2, 6, 23, .06);
-      --radius: 16px;
-    }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --bg:#0b1220;
-        --text:#e5e7eb;
-        --muted:#a1a1aa;
-        --border:#1f2937;
-        --card:#0f172a;
-        --shadow: 0 10px 30px rgba(0, 0, 0, .35);
-      }
-    }
-    html,body{height:100%;}
-    body{
-      margin:0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", "Noto Sans CJK SC","Microsoft YaHei", Arial, "Apple Color Emoji","Segoe UI Emoji";
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    /* ===== Layout ===== */
-    .app{
-      display:grid;
-      grid-template-columns: 280px 1fr;
-      min-height:100dvh;
-    }
-    .sidebar{
-      border-right:1px solid var(--border);
-      padding:18px 14px;
-      position:sticky;
-      top:0;
-      height:100dvh;
-      overflow:auto;
-    }
-    .logoRow{
-      display:flex; align-items:center; gap:10px;
-      padding:6px 10px; border-radius:12px;
-    }
-    .logoRow img{
-      width:28px; height:28px; border-radius:8px;
-      box-shadow: var(--shadow);
-    }
-    .logoText{
-      font-weight:700; letter-spacing:.2px;
-    }
-    .nav{
-      margin-top:14px;
-      display:grid; gap:6px;
-    }
-    .nav a{
-      text-decoration:none; color:var(--text);
-      padding:10px 12px; border-radius:12px;
-      display:flex; align-items:center; gap:10px;
-    }
-    .nav a:hover{ background: var(--card); }
-    .nav .label{ flex:1; font-size:14px; }
-
-    .main{
-      display:flex; flex-direction:column; min-height:100dvh;
-    }
-    .topbar{
-      height:56px; display:flex; align-items:center; justify-content:center;
-      border-bottom:1px solid var(--border);
-    }
-    .title{
-      font-size:22px; font-weight:600;
-      letter-spacing:.2px;
-    }
-    .stage{
-      flex:1; display:flex; align-items:center; justify-content:center;
-      padding:40px 16px;
-    }
-    .center{
-      width:min(900px, 92vw);
-      display:flex; flex-direction:column; align-items:center; gap:24px;
-    }
-    .hero{
-      font-size:38px; font-weight:700; text-align:center; line-height:1.2;
-    }
-
-    /* ===== Search Bar ===== */
-    .ask{
-      width:100%;
-      display:flex; align-items:center; gap:10px;
-      background:var(--bg);
-      border:1px solid var(--border);
-      border-radius:40px;
-      box-shadow: var(--shadow);
-      padding:8px;
-    }
-    .plus{
-      width:40px; height:40px; border-radius:50%;
-      display:grid; place-items:center; border:1px solid var(--border);
-      background:var(--card);
-      cursor:pointer;
-    }
-    .inputWrap{
-      flex:1; display:flex; align-items:center; gap:10px;
-      border-radius:28px; padding:0 6px 0 2px;
-    }
-    input[type="text"]{
-      flex:1; height:48px; border:none; outline:none;
-      background:transparent; color:var(--text);
-      font-size:16px;
-    }
-    .actions{
-      display:flex; align-items:center; gap:6px;
-    }
-    .chip{
-      width:40px; height:40px; border-radius:50%;
-      display:grid; place-items:center; border:1px solid var(--border);
-      background:var(--card); cursor:pointer;
-    }
-    .go{
-      height:40px; padding:0 14px; border-radius:20px; border:none;
-      background:linear-gradient(135deg, var(--brand), var(--brand-2));
-      color:white; font-weight:600; cursor:pointer;
-    }
-
-    /* ===== Example grid ===== */
-    .examples{
-      width:100%; display:grid; gap:12px;
-      grid-template-columns: repeat(2, 1fr);
-    }
-    .ex{
-      border:1px solid var(--border);
-      background:var(--card);
-      padding:14px 16px; border-radius:16px;
-      font-size:14px;
-    }
-
-    /* ===== Responsive ===== */
-    @media (max-width: 1024px){
-      .app{ grid-template-columns: 0 1fr; }
-      .sidebar{ display:none; }
-      .hero{ font-size:32px; }
-    }
-    @media (max-width: 640px){
-      .hero{ font-size:26px; }
-      .examples{ grid-template-columns: 1fr; }
-    }
-
-    /* subtle icon styles */
-    svg{ width:18px; height:18px; color:var(--muted); }
-  </style>
-</head>
-<body>
-<div class="app">
-  <!-- ===== Sidebar ===== -->
-  <aside class="sidebar">
-    <div class="logoRow">
-      <img src="logo.png" alt="GrowPilot logo" />
-      <div class="logoText">GrowPilot</div>
-    </div>
-
-    <nav class="nav" aria-label="primary">
-      <a href="#">
-        <span class="label">新聊天</span>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="WiseGrow 是一个 AI 执行前决策过滤入口，帮助你在让 AI 生成方案或进入高成本行动前，先判断是否值得进入、是否承受得起。"
+    />
+    <title>WiseGrow | AI 执行前决策过滤</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header" aria-label="主导航">
+      <a class="brand" href="#top" aria-label="WiseGrow 首页">
+        <span class="brand-mark" aria-hidden="true">W</span>
+        <span>WiseGrow</span>
       </a>
-      <a href="#"><span class="label">搜索聊天</span></a>
-      <a href="#"><span class="label">库</span></a>
+      <nav class="nav-links" aria-label="页面导航">
+        <a href="#why">为什么先过滤</a>
+        <a href="#use">适用场景</a>
+        <a href="#sample">过滤样板</a>
+      </nav>
+      <a class="header-action" href="#filter">开始过滤</a>
+    </header>
 
-      <div style="height:8px"></div>
-      <a href="#"><span class="label">Codex</span></a>
-      <a href="#"><span class="label">Sora</span></a>
-      <a href="#"><span class="label">GPT</span></a>
-
-      <div style="height:8px"></div>
-      <a href="#"><span class="label">【产研层面】</span></a>
-      <a href="#"><span class="label">思维&决策系统</span></a>
-      <a href="#"><span class="label">身心健康系统</span></a>
-      <a href="#"><span class="label">情绪韧性线</span></a>
-      <a href="#"><span class="label">职业成长系统</span></a>
-    </nav>
-  </aside>
-
-  <!-- ===== Main ===== -->
-  <main class="main">
-    <div class="topbar">
-      <div class="title">GrowPilot 5 ▾</div>
-    </div>
-
-    <section class="stage">
-      <div class="center">
-        <div class="hero">您今天在想什么？</div>
-
-        <!-- Ask bar -->
-        <form class="ask" id="askForm" autocomplete="off">
-          <div class="plus" title="新建">
-            <!-- plus icon -->
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M12 5v14M5 12h14" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </div>
-
-          <div class="inputWrap">
-            <input id="q" type="text" placeholder="询问任何问题" aria-label="输入你的问题" />
-          </div>
-
-          <div class="actions">
-            <!-- mic -->
-            <div class="chip" title="语音">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 1 1-6 0V6a3 3 0 0 1 3-3z" stroke-width="2"/>
-                <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke-width="2" stroke-linecap="round"/>
-                <path d="M12 19v3" stroke-width="2" stroke-linecap="round"/>
-              </svg>
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <canvas id="decisionCanvas" class="decision-canvas" aria-hidden="true"></canvas>
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">AI 执行前的第一道判断</p>
+            <h1 id="hero-title">AI 执行前决策过滤</h1>
+            <p class="hero-lede">
+              在让 AI 生成计划、写方案、推进合作或投入成本前，先判断这件事是否值得进入，自己是否承受得起，以及它会不会把你推到系统边缘。
+            </p>
+            <div class="hero-actions">
+              <a class="primary-link" href="#filter">输入一件准备让 AI 执行的事</a>
+              <a class="secondary-link" href="#sample">查看过滤样板</a>
             </div>
-            <!-- equalizer -->
-            <div class="chip" title="调参">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <rect x="4" y="4" width="4" height="16" rx="1" stroke-width="2"/>
-                <rect x="10" y="10" width="4" height="10" rx="1" stroke-width="2"/>
-                <rect x="16" y="6" width="4" height="14" rx="1" stroke-width="2"/>
-              </svg>
-            </div>
-            <button class="go" type="submit">开始</button>
           </div>
-        </form>
 
-        <!-- Example prompts -->
-        <div class="examples" aria-label="examples">
-          <div class="ex">帮我梳理一个【系统成长路径】的阶段划分</div>
-          <div class="ex">生成一张【方法卡】：如何提升团队协作效率</div>
-          <div class="ex">把这段复盘转成【结构卡】并给记忆要点</div>
-          <div class="ex">做个【矛盾体地图】+【系统反馈环】分析</div>
+          <form class="filter-panel" id="filter" aria-labelledby="filter-title">
+            <div class="panel-heading">
+              <p class="panel-kicker">快速试用</p>
+              <h2 id="filter-title">先过滤，再交给 AI</h2>
+            </div>
+            <label for="decisionInput">我准备让 AI 帮我做这件事</label>
+            <textarea
+              id="decisionInput"
+              name="decision"
+              rows="5"
+              placeholder="例如：我想让 AI 帮我做一份辞职转型计划，并在三个月内开始接自由职业项目。"
+            ></textarea>
+            <button class="primary-button" type="submit">
+              生成初步过滤
+            </button>
+            <p class="form-note">这不是最终建议，只是把高成本行动前最该问的问题先摆出来。</p>
+          </form>
         </div>
-      </div>
-    </section>
-  </main>
-</div>
+      </section>
 
-<script>
-  // 简单交互：提交后跳到一个占位地址
-  document.getElementById('askForm').addEventListener('submit', function(e){
-    e.preventDefault();
-    const q = (document.getElementById('q').value || '').trim();
-    if(!q){ document.getElementById('q').focus(); return; }
-    // 这里替换为你的对话页面路由或 API
-    alert('你问了：' + q + '\n（在这里对接你的对话后端/新页面）');
-  });
+      <section class="result-band" aria-live="polite">
+        <div class="section-inner result-layout">
+          <div>
+            <p class="section-kicker">即时反馈</p>
+            <h2>一个入口，只回答执行前最关键的问题</h2>
+          </div>
+          <div class="result-output" id="resultOutput">
+            <div class="result-status system-edge">等待输入</div>
+            <p>输入你准备让 AI 执行的事，WiseGrow 会先给出“系统内 / 系统边缘 / 系统外”的初步倾向。</p>
+          </div>
+        </div>
+      </section>
 
-  // 示例卡片点击 -> 填入输入框
-  document.querySelectorAll('.ex').forEach(el=>{
-    el.style.cursor='pointer';
-    el.addEventListener('click', ()=>{
-      document.getElementById('q').value = el.textContent.trim();
-      document.getElementById('q').focus();
-    });
-  });
-</script>
-</body>
+      <section class="content-section" id="why" aria-labelledby="why-title">
+        <div class="section-inner two-column">
+          <div>
+            <p class="section-kicker">为什么先过滤</p>
+            <h2 id="why-title">你通常不缺方案，缺的是进入前的停顿</h2>
+          </div>
+          <div class="body-copy">
+            <p>
+              AI 很擅长把一个想法快速扩展成计划、清单和执行步骤。但很多选择真正的风险不在方案本身，而在它会消耗你的现金流、家庭稳定、健康、信任和长期目标。
+            </p>
+            <p>
+              WiseGrow 不替你做决定，也不鼓励你把人生交给 AI。它只在行动前帮你看清：这件事是不是已经接近不可逆节点。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section muted" id="use" aria-labelledby="use-title">
+        <div class="section-inner">
+          <div class="section-head">
+            <p class="section-kicker">适用场景</p>
+            <h2 id="use-title">在这些动作前，先做一次过滤</h2>
+          </div>
+          <div class="scenario-grid" role="list">
+            <article class="scenario-card" role="listitem">
+              <span class="scenario-number">01</span>
+              <h3>让 AI 生成重大计划前</h3>
+              <p>副业、转型、创业、投资、移民、长期学习，都先看是否会超出承受力。</p>
+            </article>
+            <article class="scenario-card" role="listitem">
+              <span class="scenario-number">02</span>
+              <h3>投入大额成本前</h3>
+              <p>资金、时间、关系和注意力一旦被锁定，退出成本就会迅速升高。</p>
+            </article>
+            <article class="scenario-card" role="listitem">
+              <span class="scenario-number">03</span>
+              <h3>做公开承诺前</h3>
+              <p>发布、签约、合伙、绑定关系之前，先确认自己是否还能稳住基本系统。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section" id="sample" aria-labelledby="sample-title">
+        <div class="section-inner sample-layout">
+          <div>
+            <p class="section-kicker">过滤样板</p>
+            <h2 id="sample-title">第一版只看四个输出</h2>
+            <p class="section-summary">
+              为了获得真实外部反馈，WiseGrow 当前不追求完整理论，只保留用户最容易理解、也最能阻止盲目执行的四个判断。
+            </p>
+          </div>
+          <div class="sample-list">
+            <div class="sample-row">
+              <span>状态判断</span>
+              <strong>系统内 / 系统边缘 / 系统外</strong>
+            </div>
+            <div class="sample-row">
+              <span>核心消耗</span>
+              <strong>钱、时间、健康、关系、信任</strong>
+            </div>
+            <div class="sample-row">
+              <span>不可逆节点</span>
+              <strong>签约、投入、公开承诺、强绑定</strong>
+            </div>
+            <div class="sample-row">
+              <span>最小动作</span>
+              <strong>先做一个可退出的小验证</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta-section" aria-labelledby="cta-title">
+        <div class="section-inner cta-inner">
+          <div>
+            <p class="section-kicker">早期验证中</p>
+            <h2 id="cta-title">把一个真实选择拿来试一下</h2>
+          </div>
+          <a class="primary-link dark" href="#filter">回到过滤入口</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>WiseGrow</span>
+      <span>让 AI 生成方案之前，先把裁剪权拿回来。</span>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
 </html>
